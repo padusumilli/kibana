@@ -68,6 +68,7 @@
   </config>
 
   <config
+    ng-if="chrome.getVisible()"
     ng-show="timefilter.enabled"
     config-template="pickerTemplate"
     config-object="timefilter"
