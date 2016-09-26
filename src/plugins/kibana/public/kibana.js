@@ -12,6 +12,7 @@ const routes = require('ui/routes');
 const modules = require('ui/modules');
 
 const kibanaLogoUrl = require('ui/images/kibana.svg');
+const brandedLogoUrl = '/img/branding/logo-kibana.png';
 
 routes.enable();
 
@@ -22,10 +23,10 @@ routes
 
 chrome
 .setBrand({
-  'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
-  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat'
+  'logo': 'url(' + brandedLogoUrl + ') left no-repeat',
+  'smallLogo': 'url(' + brandedLogoUrl + ') left no-repeat'
 })
-.setNavBackground('#222222')
+.setNavBackground('#043C57')
 .setTabDefaults({
   resetWhenActive: true,
   lastUrlStore: window.sessionStore,
@@ -46,11 +47,12 @@ chrome
   {
     id: 'dashboard',
     title: 'Dashboard'
-  },
-  {
-    id: 'settings',
-    title: 'Settings'
   }
+  //  ,
+  //{
+  //  id: 'settings',
+  //  title: 'Settings'
+  //}
 ])
 .setRootController('kibana', function ($scope, $rootScope, courier, config) {
   function setDefaultTimezone() {

@@ -62,7 +62,16 @@
       </kbn-tooltip>
       <navbar-extensions config-template="configTemplate" name="discover"></navbar-extensions>
     </div>
+    <div ng-if="!chrome.getVisible()" class="embed-time" kbn-chrome-append-nav-controls></div>
   </navbar>
+
+  <config
+    ng-if="!chrome.getVisible()"
+    ng-show="timefilter.enabled"
+    config-template="pickerTemplate"
+    config-object="timefilter"
+    config-close="pickerTemplate.close">
+  </config>
 
   <config config-template="configTemplate" config-object="opts" config-close="configClose"></config>
 

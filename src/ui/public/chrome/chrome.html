@@ -46,6 +46,10 @@
           </a>
         </li>
 
+        <li style="margin-left: 20px;">
+          <a href="/ui/index.html#/tslabs">Back to TSLabs</a>
+        </li>
+
         <li class="to-body" ng-class="{ active: appSwitcherTemplate.is('switcher') }" ng-if="chrome.getShowAppsLink()">
           <a ng-click="appSwitcherTemplate.toggle('switcher')">
             <i class="fa fa-th" alt="Show app switcher"></i>
@@ -64,6 +68,7 @@
   </config>
 
   <config
+    ng-if="chrome.getVisible()"
     ng-show="timefilter.enabled"
     config-template="pickerTemplate"
     config-object="timefilter"

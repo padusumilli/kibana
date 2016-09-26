@@ -26,7 +26,7 @@ let internals = _.defaults(
 );
 
 $('<link>').attr({
-  href: require('ui/images/elk.ico'),
+  href: '/favicon.ico',
   rel: 'shortcut icon'
 }).appendTo('head');
 
