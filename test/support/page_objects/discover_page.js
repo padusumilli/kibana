@@ -51,6 +51,9 @@ export default class DiscoverPage {
     return this.clickLoadSavedSearchButton()
     .then(() => {
       this.findTimeout.findByLinkText(searchName).click();
+    })
+    .then(() => {
+      return PageObjects.header.getSpinnerDone();
     });
   }
 
@@ -79,8 +82,11 @@ export default class DiscoverPage {
   }
 
   getBarChartData() {
-    return this.findTimeout
-    .findAllByCssSelector('rect[data-label="Count"]')
+    return PageObjects.header.getSpinnerDone()
+    .then(() => {
+      return this.findTimeout
+      .findAllByCssSelector('rect[data-label="Count"]');
+    })
     .then(function (chartData) {
 
       function getChartData(chart) {
@@ -128,13 +134,19 @@ export default class DiscoverPage {
       return this.findTimeout
       .findByCssSelector('option[label="' + interval + '"]')
       .click();
+    })
+    .then(() => {
+      return PageObjects.header.getSpinnerDone();
     });
   }
 
   getHitCount() {
-    return this.findTimeout
-    .findByCssSelector('strong.discover-info-hits')
-    .getVisibleText();
+    return PageObjects.header.getSpinnerDone()
+    .then(() => {
+      return this.findTimeout
+      .findByCssSelector('strong.discover-info-hits')
+      .getVisibleText();
+    });
   }
 
   query(queryString) {
@@ -146,6 +158,9 @@ export default class DiscoverPage {
       return this.findTimeout
       .findByCssSelector('button[aria-label="Search"]')
       .click();
+    })
+    .then(() => {
+      return PageObjects.header.getSpinnerDone();
     });
   }
 
@@ -187,31 +202,25 @@ export default class DiscoverPage {
 
   clickShortenUrl() {
     return this.findTimeout
-    .findByCssSelector('button.shorten-button')
+    .findByCssSelector('[data-test-subj="sharedSnapshotShortUrlButton"]')
     .click();
   }
 
   clickCopyToClipboard() {
     return this.findTimeout
-    .findDisplayedByCssSelector('button.clipboard-button')
+    .findByCssSelector('[data-test-subj="sharedSnapshotCopyButton"]')
     .click();
   }
 
   getShareCaption() {
     return this.findTimeout
-    .findByCssSelector('.vis-share label')
+    .findByCssSelector('[data-test-subj="shareUiTitle"]')
     .getVisibleText();
   }
 
   getSharedUrl() {
     return this.findTimeout
-    .findByCssSelector('.url')
-    .getProperty('value');
-  }
-
-  getShortenedUrl() {
-    return this.findTimeout
-    .findByCssSelector('.url')
+    .findByCssSelector('[data-test-subj="sharedSnapshotUrl"]')
     .getProperty('value');
   }
 

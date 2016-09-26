@@ -81,6 +81,13 @@ export default function defaultSettingsProvider() {
         'elasticsearch. This setting attempts to prevent the list of segments from getting too long, which might ' +
         'cause requests to take much longer to process'
     },
+    'courier:ignoreFilterIfFieldNotInIndex': {
+      value: false,
+      description: 'This configuration enhances support for dashboards containing visualizations accessing dissimilar indexes. ' +
+        'When set to false, all filters are applied to all visualizations. ' +
+        'When set to true, filter(s) will be ignored for a visualization ' +
+        'when the visualization\'s index does not contain the filtering field.'
+    },
     'fields:popularLimit': {
       value: 10,
       description: 'The top N most popular fields to show',
@@ -128,6 +135,13 @@ export default function defaultSettingsProvider() {
       value: '2s',
       description: 'Time to wait before dimming visualizations during query'
     },
+    'visualization:dimmingOpacity': {
+      type: 'number',
+      value: 0.5,
+      description: 'The opacity of the chart items that are dimmed when highlighting another element of the chart. ' +
+      'The lower this number, the more the highlighted element will stand out.' +
+      'This must be a number between 0 and 1.'
+    },
     'csv:separator': {
       value: ',',
       description: 'Separate exported values with this string',
@@ -160,6 +174,7 @@ export default function defaultSettingsProvider() {
   "ip": { "id": "ip", "params": {} },
   "date": { "id": "date", "params": {} },
   "number": { "id": "number", "params": {} },
+  "boolean": { "id": "boolean", "params": {} },
   "_source": { "id": "_source", "params": {} },
   "_default_": { "id": "string", "params": {} }
 }`,
@@ -244,5 +259,48 @@ export default function defaultSettingsProvider() {
       description: 'The time in milliseconds which an information notification ' +
         'will be displayed on-screen for. Setting to Infinity will disable.'
     },
+    // Timelion stuff
+    'timelion:showTutorial': {
+      value: false,
+      description: 'Should I show the tutorial by default when entering the timelion app?'
+    },
+    'timelion:es.timefield': {
+      value: '@timestamp',
+      description: 'Default field containing a timestamp when using .es()'
+    },
+    'timelion:es.default_index': {
+      value: '_all',
+      description: 'Default elasticsearch index to search with .es()'
+    },
+    'timelion:target_buckets': {
+      value: 200,
+      description: 'The number of buckets to shoot for when using auto intervals'
+    },
+    'timelion:max_buckets': {
+      value: 2000,
+      description: 'The maximum number of buckets a single datasource can return'
+    },
+    'timelion:default_columns': {
+      value: 2,
+      description: 'Number of columns on a timelion sheet by default'
+    },
+    'timelion:default_rows': {
+      value: 2,
+      description: 'Number of rows on a timelion sheet by default'
+    },
+    'timelion:graphite.url': {
+      value: 'https://www.hostedgraphite.com/UID/ACCESS_KEY/graphite',
+      description: 'The URL of your graphite host'
+    },
+    'timelion:quandl.key': {
+      value: 'someKeyHere',
+      description: 'Your API key from www.quandl.com'
+    },
+    'state:storeInSessionStorage': {
+      value: false,
+      description: 'The URL can sometimes grow to be too large for some browsers to ' +
+        'handle. To counter-act this we are testing if storing parts of the URL in ' +
+        'sessions storage could help. Please let us know how it goes!'
+    }
   };
 };

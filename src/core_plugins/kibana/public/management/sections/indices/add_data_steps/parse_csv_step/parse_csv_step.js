@@ -1,11 +1,13 @@
 import _ from 'lodash';
 import Papa from 'papaparse';
 import modules from 'ui/modules';
+import validateHeaders from './lib/validate_headers';
 import template from './parse_csv_step.html';
 import './styles/_add_data_parse_csv_step.less';
+import numeral from '@spalger/numeral';
 
 modules.get('apps/management')
-  .directive('parseCsvStep', function () {
+  .directive('parseCsvStep', function (addDataMaxBytes) {
     return {
       restrict: 'E',
       template: template,
@@ -19,6 +21,8 @@ modules.get('apps/management')
       controller: function ($scope, debounce) {
         const maxSampleRows = 10;
         const maxSampleColumns = 20;
+
+        this.maxBytesFormatted = numeral(addDataMaxBytes).format('0 b');
 
         this.delimiterOptions = [
           {
@@ -54,10 +58,18 @@ modules.get('apps/management')
           this.formattedErrors = [];
           this.formattedWarnings = [];
 
+          if (this.file.size > addDataMaxBytes) {
+            this.formattedErrors.push(
+              `File size (${this.file.size} bytes) is greater than the configured limit of ${addDataMaxBytes} bytes`
+            );
+            return;
+          }
+
           const config = _.assign(
             {
               header: true,
               dynamicTyping: true,
+              skipEmptyLines: true,
               step: (results, parser) => {
                 if (row > maxSampleRows) {
                   parser.abort();
@@ -67,20 +79,15 @@ modules.get('apps/management')
                   return;
                 }
                 if (row === 1) {
-                  // Collect general information on the first pass
-                  if (results.meta.fields.length > _.uniq(results.meta.fields).length) {
-                    this.formattedErrors.push('Column names must be unique');
-                  }
-
-                  let hasEmptyHeader = false;
-                  _.forEach(results.meta.fields, (field) => {
-                    if (_.isEmpty(field)) {
-                      hasEmptyHeader = true;
+                  // Check for header errors on the first row
+                  const errors = validateHeaders(results.meta.fields);
+                  _.forEach(errors, (error) => {
+                    if (error.type === 'duplicate') {
+                      this.formattedErrors.push(`Columns at positions [${error.positions}] have duplicate name "${error.fieldName}"`);
+                    } else if (error.type === 'blank') {
+                      this.formattedErrors.push(`Columns at positions [${error.positions}] must not be blank`);
                     }
                   });
-                  if (hasEmptyHeader) {
-                    this.formattedErrors.push('Column names must not be blank');
-                  }
 
                   if (results.meta.fields.length > maxSampleColumns) {
                     this.formattedWarnings.push(`Preview truncated to ${maxSampleColumns} columns`);

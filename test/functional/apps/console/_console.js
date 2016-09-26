@@ -1,12 +1,22 @@
 
 import expect from 'expect.js';
 
+import PageObjects from '../../../support/page_objects';
 import {
   bdd,
   scenarioManager
 } from '../../../support';
 
-import PageObjects from '../../../support/page_objects';
+const DEFAULT_REQUEST = `
+
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+`.trim();
 
 bdd.describe('console app', function describeIndexTests() {
   bdd.before(function () {
@@ -15,15 +25,6 @@ bdd.describe('console app', function describeIndexTests() {
   });
 
   bdd.it('should show the default request', function () {
-    var expectedRequest = [
-      'GET _search',
-      '{',
-      '  "query": {',
-      '    "match_all": {}',
-      '  }',
-      '}',
-      ''
-    ];
     PageObjects.common.saveScreenshot('Console-help-expanded');
     // collapse the help pane because we only get the VISIBLE TEXT, not the part that is scrolled
     return PageObjects.console.collapseHelp()
@@ -32,14 +33,15 @@ bdd.describe('console app', function describeIndexTests() {
       return PageObjects.common.try(function () {
         return PageObjects.console.getRequest()
         .then(function (actualRequest) {
-          expect(actualRequest).to.eql(expectedRequest);
+          expect(actualRequest.trim()).to.eql(DEFAULT_REQUEST);
         });
       });
     });
   });
 
   bdd.it('default request response should contain .kibana' , function () {
-    var expectedResponseContains = '"_index": ".kibana",';
+    const expectedResponseContains = '"_index": ".kibana",';
+
     return PageObjects.console.clickPlay()
     .then(function () {
       PageObjects.common.saveScreenshot('Console-default-request');
@@ -50,6 +52,20 @@ bdd.describe('console app', function describeIndexTests() {
           expect(actualResponse).to.contain(expectedResponseContains);
         });
       });
+    });
+  });
+
+  bdd.it('settings should allow changing the text size', async function () {
+    await PageObjects.console.setFontSizeSetting(20);
+    await PageObjects.common.try(async () => {
+      // the settings are not applied synchronously, so we retry for a time
+      expect(await PageObjects.console.getRequestFontSize()).to.be('20px');
+    });
+
+    await PageObjects.console.setFontSizeSetting(24);
+    await PageObjects.common.try(async () => {
+      // the settings are not applied synchronously, so we retry for a time
+      expect(await PageObjects.console.getRequestFontSize()).to.be('24px');
     });
   });
 });

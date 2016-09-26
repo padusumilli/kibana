@@ -1,59 +1,71 @@
+import Bluebird from 'bluebird';
 
+import PageObjects from './';
 import {
   defaultFindTimeout,
 } from '../';
 
-export default class ConsolePage {
+async function getVisibleTextFromAceEditor(editor) {
+  const lines = await editor.findAllByClassName('ace_line_group');
+  const linesText = await Bluebird.map(lines, l => l.getVisibleText());
+  return linesText.join('\n');
+}
 
+export default class ConsolePage {
   init(remote) {
     this.remote = remote;
-    this.findTimeout = this.remote.setFindTimeout(defaultFindTimeout);
   }
 
-  getServer() {
-    return this.findTimeout
-    .findByCssSelector('#kibana-body > div.content > div > div')
-    .getVisibleText();
+  async getRequestEditor() {
+    return await PageObjects.common.findTestSubject('console request-editor');
   }
 
-  setServer(server) {
-    return this.findTimeout
-    .findByCssSelector('input[aria-label="Server Name"]')
-    .clearValue()
-    .type(server);
+  async getRequest() {
+    const requestEditor = await this.getRequestEditor();
+    return await getVisibleTextFromAceEditor(requestEditor);
   }
 
-  getRequest() {
-    return this.findTimeout
-    .findAllByCssSelector('div.ace_line_group')
-    .then(function (editorData) {
+  async getResponse() {
+    const responseEditor = await PageObjects.common.findTestSubject('console response-editor');
+    return await getVisibleTextFromAceEditor(responseEditor);
+  }
 
-      function getEditorData(line) {
-        return line.getVisibleText();
-      }
+  async clickPlay() {
+    const sendRequestButton = await PageObjects.common.findTestSubject('console send-request-button');
+    await sendRequestButton.click();
+  }
 
-      var getEditorDataPromises = editorData.map(getEditorData);
-      return Promise.all(getEditorDataPromises);
+  async collapseHelp() {
+    const closeButton = await PageObjects.common.findTestSubject('console help-close-button');
+    await closeButton.click();
+  }
+
+  async openSettings() {
+    const settingsButton = await PageObjects.common.findTestSubject('console top-nav menu-item-settings');
+    await settingsButton.click();
+  }
+
+  async setFontSizeSetting(newSize) {
+    await this.openSettings();
+
+    // while the settings form opens/loads this may fail, so retry for a while
+    await PageObjects.common.try(async () => {
+      const fontSizeInput = await PageObjects.common.findTestSubject('console setting-font-size-input');
+      await fontSizeInput.clearValue();
+      await fontSizeInput.click();
+      await fontSizeInput.type(String(newSize));
     });
+
+    const saveButton = await PageObjects.common.findTestSubject('console settings-save-button');
+    await saveButton.click();
   }
 
-  getResponse() {
-    return this.findTimeout
-    .findByCssSelector('#output > div.ace_scroller > div')
-    .getVisibleText();
+  async getFontSize(editor) {
+    const aceLine = await editor.findByClassName('ace_line');
+    return await aceLine.getComputedStyle('font-size');
   }
 
-  clickPlay() {
-    return this.findTimeout
-    .findByCssSelector('#editor_actions > span.ng-scope > a > i')
-    .click();
+  async getRequestFontSize() {
+    return await this.getFontSize(await this.getRequestEditor());
   }
-
-  collapseHelp() {
-    return this.findTimeout
-    .findByCssSelector('div.config-close.remove > i')
-    .click();
-
-  }
-
 }

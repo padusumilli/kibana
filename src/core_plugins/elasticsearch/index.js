@@ -23,6 +23,7 @@ module.exports = function ({ Plugin }) {
         shardTimeout: number().default(0),
         requestTimeout: number().default(30000),
         requestHeadersWhitelist: array().items().single().default(DEFAULT_REQUEST_HEADERS),
+        customHeaders: object().default({}),
         pingTimeout: number().default(ref('requestTimeout')),
         startupTimeout: number().default(5000),
         ssl: object({
@@ -32,7 +33,6 @@ module.exports = function ({ Plugin }) {
           key: string()
         }).default(),
         apiVersion: Joi.string().default('master'),
-        engineVersion: Joi.string().valid('^5.0.0').default('^5.0.0')
       }).default();
     },
 

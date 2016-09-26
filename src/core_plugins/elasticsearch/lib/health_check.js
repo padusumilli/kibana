@@ -5,7 +5,8 @@ import exposeClient from './expose_client';
 import migrateConfig from './migrate_config';
 import createKibanaIndex from './create_kibana_index';
 import checkEsVersion from './check_es_version';
-import manageUuid from './manage_uuid';
+import kibanaVersion from './kibana_version';
+
 const NoConnections = elasticsearch.errors.NoConnections;
 import util from 'util';
 const format = util.format;
@@ -19,7 +20,6 @@ const REQUEST_DELAY = 2500;
 module.exports = function (plugin, server) {
   const config = server.config();
   const client = server.plugins.elasticsearch.client;
-  const uuidManagement = manageUuid(server);
 
   plugin.status.yellow('Waiting for Elasticsearch');
 
@@ -87,9 +87,8 @@ module.exports = function (plugin, server) {
 
   function check() {
     return waitForPong()
-    .then(_.partial(checkEsVersion, server))
+    .then(() => checkEsVersion(server, kibanaVersion.get()))
     .then(waitForShards)
-    .then(uuidManagement)
     .then(setGreenStatus)
     .then(_.partial(migrateConfig, server))
     .catch(err => plugin.status.red(err));
