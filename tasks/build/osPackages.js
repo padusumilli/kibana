@@ -6,7 +6,7 @@ module.exports = function (grunt) {
   const exec = require('../utils/exec');
   const targetDir = config.get('target');
   const version = config.get('pkg.version');
-  const iteration = config.get('iteration');
+  const iteration = config.get('pkg.iteration');
   const packageScriptsDir = config.get('packageScriptsDir');
   const servicesByName = indexBy(config.get('services'), 'name');
 
