@@ -6,6 +6,7 @@ module.exports = function (grunt) {
   const exec = require('../utils/exec');
   const targetDir = config.get('target');
   const version = config.get('pkg.version');
+  const iteration = config.get('pkg.iteration');
   const packageScriptsDir = config.get('packageScriptsDir');
   const servicesByName = indexBy(config.get('services'), 'name');
 
@@ -24,6 +25,7 @@ module.exports = function (grunt) {
         '--name', 'kibana',
         '--description', 'Explore\ and\ visualize\ your\ Elasticsearch\ data',
         '--version', version,
+        '--iteration', iteration,
         '--url', 'https://www.elastic.co',
         '--vendor', 'Elasticsearch,\ Inc.',
         '--maintainer', 'Kibana Team\ \<info@elastic.co\>',

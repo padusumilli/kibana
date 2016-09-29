@@ -7,7 +7,7 @@ module.exports = function (grunt) {
 
     exec('npm install  --production --no-optional', {
       cwd: grunt.config.process('<%= root %>/build/kibana'),
-      maxBuffer: 500 * 1024
+      maxBuffer: 1000 * 1024
     }, this.async());
   });
 };
