@@ -6,7 +6,8 @@ module.exports = function (grunt) {
     grunt.file.mkdir('build/kibana/node_modules');
 
     exec('npm install  --production --no-optional', {
-      cwd: grunt.config.process('<%= root %>/build/kibana')
+      cwd: grunt.config.process('<%= root %>/build/kibana'),
+      maxBuffer: 1000 * 1024
     }, this.async());
   });
 };
